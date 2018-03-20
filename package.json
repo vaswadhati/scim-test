@@ -11,7 +11,8 @@
     "rfc-7644",
     "bdd",
     "mocha",
-    "chai"
+    "chai",
+    "eslint"
   ],
   "author": "Vijay Aswadhati, Srinivas Gopalakrishnan",
   "license": "MIT",
