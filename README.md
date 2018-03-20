@@ -13,6 +13,7 @@ Software development has changed dramatically in the past couple of years.
 This project was created as a way to illustrate the development process using
 a few of the tools, methodologies and best practices. A list of what I think
 is pertinent follows:
+- [x] Learn git (and explore github features)
 - [x] The basics: README and LICENSE
 - [x] Use lint and make it specific for the project type (i.e backend vs frontend)
 - [x] Remember to .gitignore
@@ -43,8 +44,9 @@ SCIM_CLIENT_ID=client-id SCIM_CLIENT_SECRET=client-secret npm run test
 - TODO: highlight salient features of BDD
 - NOTE: Mocha is developer friendly bdd; cucumber/gherkin is business friendly bdd :-)
 
-
-
+## Git Related Notes:
+- To allow for password-less remote push, set remote to use git (not https) protocol
+See https://stackoverflow.com/questions/16330404/how-to-remove-remote-origin-from-git-repo#16330439
 
 
 ## License
