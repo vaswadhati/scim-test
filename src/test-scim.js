@@ -10,8 +10,9 @@ const client_secret = process.env.SCIM_CLIENT_SECRET;
 const expect = chai.expect;
 chai.use(http);
 
-const scimServer = 'https://conduit.productionready.io/api';
-const authServer = 'https://conduit.productionready.io/api';
+// TODO: fix me!
+const scimServer = 'https://localhost:scim-port/scim/api';
+const authServer = 'https://localhost:auth-port/auth/api';
 
 // NOTE: scimServer is a closure and should be defined by this point
 // const Api = () => chai.request(scimServer);
