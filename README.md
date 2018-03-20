@@ -14,7 +14,8 @@ Clone this project from github and then:
 ```sh
 cd scim-test
 npm install
-npm run test
+
+SCIM_CLIENT_ID=client-id SCIM_CLIENT_SECRET=client-secret npm run test
 ```
 
 ## Features

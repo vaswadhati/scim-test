@@ -19,6 +19,8 @@ const authServer = 'https://conduit.productionready.io/api';
 describe('SCIM API', () => {
   before((done) => {
     console.log(`SCIM server is at ${scimServer}`);
+    // console.log(`client-id ${client_id}`);
+    // console.log(`client-secret ${client_secret}`);
     done();
   });
 
