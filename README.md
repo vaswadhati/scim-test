@@ -16,7 +16,7 @@ is pertinent follows:
 - [x] The basics: README and LICENSE
 - [x] Use lint and make it specific for the project type (i.e backend vs frontend)
 - [x] Remember to .gitignore
-- [x] Rather that twiddle with your editor, agree on .editorconfig for all
+- [x] Rather than twiddle with your editor, agree on .editorconfig for all
 - [ ] Use git precommit hooks
 - [x] Use modern JavaScript (ES6/7)
 - [x] Illustrate BDD (using Mocha+Chai)
@@ -40,8 +40,8 @@ SCIM_CLIENT_ID=client-id SCIM_CLIENT_SECRET=client-secret npm run test
 
 ## Features
 
-TODO: highlight salient features of BDD
-NOTE: Mocha is developer friendly bdd; cucumber/gherkin is business friendly bdd :-)
+- TODO: highlight salient features of BDD
+- NOTE: Mocha is developer friendly bdd; cucumber/gherkin is business friendly bdd :-)
 
 
 
