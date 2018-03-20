@@ -1,0 +1,35 @@
+{
+  "name": "scim-test",
+  "version": "0.0.1",
+  "description": "mocha tests for testing scim-2 endpoint",
+  "scripts": {
+    "lint": "eslint src --cache",
+    "test": "mocha --exit src/test-scim.js"
+  },
+  "keywords": [
+    "scim",
+    "rfc-7644",
+    "bdd",
+    "mocha",
+    "chai"
+  ],
+  "author": "Vijay Aswadhati, Srinivas Gopalakrishnan",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
+    "eslint": "^4.19.0",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-loader": "^2.0.0",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "faker": "^4.1.0",
+    "mocha": "^5.0.4",
+    "snap-shot-it": "^4.1.4"
+  },
+  "eslintIgnore": [
+    "**/__snapshots__/*"
+  ]
+}
