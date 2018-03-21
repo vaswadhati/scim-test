@@ -48,6 +48,10 @@ SCIM_CLIENT_ID=client-id SCIM_CLIENT_SECRET=client-secret npm run test
 - To allow for password-less remote push, set remote to use git (not https) protocol
 See https://stackoverflow.com/questions/16330404/how-to-remove-remote-origin-from-git-repo#16330439
 
+## Issues
+- chai-http chokes when using self-signed-cert. Temp fix is to disable
+  NODE_TLS_REJECT_UNAUTHORIZED; more durable solution is to add
+  Let's Encrypt cert for local SCIM provider test.
 
 ## License
 MIT - See LICENSE.md

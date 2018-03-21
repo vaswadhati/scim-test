@@ -1,27 +1,33 @@
 const chai = require('chai');
 const http = require('chai-http');
+const helpers = require('./helpers');
+
 // const jwt = require('jsonwebtoken');
 // const snapshot = require('snap-shot-it');
 
 const client_id = process.env.SCIM_CLIENT_ID;
 const client_secret = process.env.SCIM_CLIENT_SECRET;
 
+// FIX ME! use let's encrypt
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
+
 // TODO: switch to modules when NodeJS supports ESM
 const expect = chai.expect;
 chai.use(http);
 
 // TODO: fix me!
-const scimServer = 'https://localhost:scim-port/scim/api';
-const authServer = 'https://localhost:auth-port/auth/api';
+const scimServer = 'https://kl/identity/restv1/scim/v2';
+const authServer = 'https://kl/oxauth/restv1';
+const errorLocation = 'https://kl/identity/error';
 
 // NOTE: scimServer is a closure and should be defined by this point
-// const Api = () => chai.request(scimServer);
+const scimApi = () => chai.request(scimServer);
 
 describe('SCIM API', () => {
   before((done) => {
-    console.log(`SCIM server is at ${scimServer}`);
-    // console.log(`client-id ${client_id}`);
-    // console.log(`client-secret ${client_secret}`);
+    // console.log(`SCIM server is at ${scimServer}`);
+    // console.log(`client-id    : ${client_id}`);
+    // console.log(`client-secret: ${client_secret}`);
     done();
   });
 
@@ -31,32 +37,44 @@ describe('SCIM API', () => {
   });
 
   context('Non-functional requirements', () => {
-    it('none at this point', async () => {
-      // await () => {}
+    it('Use fake data to test', async () => {
+      const user = helpers.fakeUserProfile();
+      expect(user).to.not.be.empty;
+
+      // FIX ME! add checks to ensure compliance
     });
   });
 
   context('When not authenticated', () => {
-    it('TBD at this point', async () => {
-      // expect(true).to.be.false; // fail here ...
+    it('scim access should redirect', async () => {
+      const response = await scimApi().options('/Users');
+      expect(response).to.redirectTo(errorLocation);
+
+      // Technically, should this not be forbidden and not a redirect?
     });
   });
 
   context('When authenticated', () => {
+    let token = undefined,
+      token_type = undefined,
+      token_expires = undefined;
+
+    const scimAgent = chai.request.agent(scimServer);
+
     before('get token', async () => {
       const authAgent = chai.request.agent(authServer);
 
       const res = await authAgent
         .post('/token')
+        .auth(client_id, client_secret)
         .set('content-type', 'application/x-www-form-urlencoded')
         .send({
-          grant_type: 'client_credentials',
-          client_id, client_secret
+          grant_type: 'client_credentials'
         });
 
-      const token = res.body.access_token;
-      const token_type = res.body.token_type;
-      const token_expires = res.body.expires_in;
+      token = res.body.access_token;
+      token_type = res.body.token_type;
+      token_expires = res.body.expires_in;
 
       expect(token).to.be.not.null;
       expect(token_type).to.equal('bearer');
@@ -64,11 +82,34 @@ describe('SCIM API', () => {
     });
 
     after('release token', async () => {
+      token = undefined;
+    });
 
+    it('should be able to list users', async () => {
+      const res = await scimAgent
+        .get('/Users')
+        .set('Authorization', `Bearer ${token}`)
+        .set('Content-Type', 'application/scim+json');
+
+      expect(res).to.have.status(200);
+
+      // FIX ME! add more expects
     });
 
     it('should be able to create user', async () => {
+      const user = helpers.fakeUserProfile();
+      // console.log(JSON.stringify(user));
 
+      const res = await scimAgent
+        .post('/Users')
+        .set('Authorization', `Bearer ${token}`)
+        .set('Content-Type', 'application/scim+json')
+        .send(JSON.stringify(user));
+
+      // await console.log(res.body);
+      expect(res).to.have.status(201);
+
+      // FIX ME! add more expects
     });
   });
 });
