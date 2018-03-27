@@ -61,6 +61,10 @@ describe('SCIM API', () => {
 
     const scimAgent = chai.request.agent(scimServer);
 
+    const user = helpers.fakeUserProfile();
+    // console.log(JSON.stringify(user));
+    let userid = undefined;
+
     before('get token', async () => {
       const authAgent = chai.request.agent(authServer);
 
@@ -91,14 +95,14 @@ describe('SCIM API', () => {
         .set('Authorization', `Bearer ${token}`)
         .set('Content-Type', 'application/scim+json');
 
+      // await console.log(res.body)
       expect(res).to.have.status(200);
-
-      // FIX ME! add more expects
+      const userCount = res.body.totalResults;
+      expect (userCount).to.be.greaterThan(1);
+      expect(res.body.Resources[0].userName).to.equal('admin')
     });
 
     it('should be able to create user', async () => {
-      const user = helpers.fakeUserProfile();
-      // console.log(JSON.stringify(user));
 
       const res = await scimAgent
         .post('/Users')
@@ -108,8 +112,47 @@ describe('SCIM API', () => {
 
       // await console.log(res.body);
       expect(res).to.have.status(201);
+      expect(res.body.userName).to.equal(user.userName)
+      expect(res.body.active).to.equal(true)
 
-      // FIX ME! add more expects
+      userid = res.body.id;
+    });
+
+    it('should be able to query user by Id', async () => {
+
+      const res = await scimAgent
+        .get(`/Users/${userid}`)
+        .set('Authorization', `Bearer ${token}`)
+
+      // await console.log(res.body);
+      expect(res).to.have.status(200);
+      expect(res.body.userName).to.equal(user.userName)
+      expect(res.body.active).to.equal(true)
+    });
+    
+    it('should be able to update user', async () => {
+
+      user.emails[0].display = 'modified@testmail.com';
+
+      const res = await scimAgent
+        .put(`/Users/${userid}`)
+        .set('Authorization', `Bearer ${token}`)
+        .set('Content-Type', 'application/scim+json')
+        .send(JSON.stringify(user));
+
+      // await console.log(res.body);
+      expect(res).to.have.status(200);
+      expect(res.body.emails[0].display).to.equal('modified@testmail.com')
+      expect(res.body.active).to.equal(true)
+    });
+
+    it('should be able to delete user', async () => {
+
+      const res = await scimAgent
+        .del(`/Users/${userid}`)
+        .set('Authorization', `Bearer ${token}`)
+
+      expect(res).to.have.status(204);
     });
   });
 });
