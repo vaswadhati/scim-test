@@ -61,6 +61,14 @@ describe('SCIM API', () => {
 
     const scimAgent = chai.request.agent(scimServer);
 
+    const user = helpers.fakeUserProfile();
+    const groupname = 'Group1';
+    const group = helpers.newGroup(groupname);
+    // console.log(JSON.stringify(user));
+    // console.log(JSON.stringify(group));
+    let userid = undefined, groupid = undefined;
+    // let groupid = undefine;
+
     before('get token', async () => {
       const authAgent = chai.request.agent(authServer);
 
@@ -91,25 +99,113 @@ describe('SCIM API', () => {
         .set('Authorization', `Bearer ${token}`)
         .set('Content-Type', 'application/scim+json');
 
+      // await console.log(res.body)
       expect(res).to.have.status(200);
-
-      // FIX ME! add more expects
+      const userCount = res.body.totalResults;
+      expect(userCount).equals(res.body.Resources.length);
+      expect(res.body.Resources[0].userName).to.equal('admin');
     });
 
     it('should be able to create user', async () => {
-      const user = helpers.fakeUserProfile();
-      // console.log(JSON.stringify(user));
-
       const res = await scimAgent
         .post('/Users')
         .set('Authorization', `Bearer ${token}`)
         .set('Content-Type', 'application/scim+json')
         .send(JSON.stringify(user));
 
-      // await console.log(res.body);
       expect(res).to.have.status(201);
+      expect(res.body.userName).to.equal(user.userName);
+      expect(res.body.active).to.equal(true);
 
-      // FIX ME! add more expects
+      userid = res.body.id;
+    });
+
+    it('should be able to query user by Id', async () => {
+      const res = await scimAgent
+        .get(`/Users/${userid}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res).to.have.status(200);
+      expect(res.body.userName).to.equal(user.userName);
+      expect(res.body.active).to.equal(true);
+    });
+
+    it('should be able to update user', async () => {
+      user.emails[0].display = 'modified@testmail.com';
+
+      const res = await scimAgent
+        .put(`/Users/${userid}`)
+        .set('Authorization', `Bearer ${token}`)
+        .set('Content-Type', 'application/scim+json')
+        .send(JSON.stringify(user));
+
+      expect(res).to.have.status(200);
+      expect(res.body.emails[0].display).to.equal('modified@testmail.com');
+      expect(res.body.active).to.equal(true);
+    });
+
+    it('should be able to list groups', async () => {
+      const res = await scimAgent
+        .get('/Groups')
+        .set('Authorization', `Bearer ${token}`)
+        .set('Content-Type', 'application/scim+json');
+
+      // await console.log(res.body)
+      expect(res).to.have.status(200);
+      const userCount = res.body.totalResults;
+      expect(userCount).equals(res.body.Resources.length);
+    });
+
+    it('should be able to create group', async () => {
+      const res = await scimAgent
+        .post('/Groups')
+        .set('Authorization', `Bearer ${token}`)
+        .set('Content-Type', 'application/scim+json')
+        .send(JSON.stringify(group));
+
+      expect(res).to.have.status(201);
+      expect(res.body.displayName).to.equal(group.displayName);
+
+      groupid = res.body.id;
+    });
+
+    it('should be able to query group by Id', async () => {
+      const res = await scimAgent
+        .get(`/Groups/${groupid}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res).to.have.status(200);
+      expect(res.body.displayName).to.equal(group.displayName);
+    });
+
+    it('should be able to update Group - Add User', async () => {
+      const updGroup = helpers.updateGroupAddUser(userid, groupname);
+      // console.log(JSON.stringify(updGroup));
+      const res = await scimAgent
+        .put(`/Groups/${groupid}`)
+        .set('Authorization', `Bearer ${token}`)
+        .set('Content-Type', 'application/scim+json')
+        .send(JSON.stringify(updGroup));
+
+      expect(res).to.have.status(200);
+      expect(res.body.id).to.equal(groupid);
+      expect(res.body.members[0].value).to.equal(userid);
+    });
+
+    it('should be able to delete group', async () => {
+      const res = await scimAgent
+        .del(`/Groups/${groupid}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res).to.have.status(204);
+    });
+
+    it('should be able to delete user', async () => {
+      const res = await scimAgent
+        .del(`/Users/${userid}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res).to.have.status(204);
     });
   });
 });

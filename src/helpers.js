@@ -42,6 +42,32 @@ const fakeUserProfile = (overrides = {}) => {
   };
 };
 
+const newGroup = (group_name) => {
+  const group_data = {
+    schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+    displayName: group_name
+  };
+
+  return {
+    ...group_data
+  };
+};
+
+const updateGroupAddUser = (userid, groupname) => {
+  const group_data = {
+    displayName: groupname,
+    schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+    members: [{
+      value: userid,
+      type: null
+    }]
+  };
+
+  return {
+    ...group_data
+  };
+};
+
 // The minimum is inclusive and the maximum is excluded
 function getRandomInRange(min, max) {
   min = Math.ceil(min);
@@ -51,5 +77,5 @@ function getRandomInRange(min, max) {
 }
 
 module.exports = {
-  fakeUserProfile, getRandomInRange
+  fakeUserProfile, getRandomInRange, newGroup, updateGroupAddUser
 };
